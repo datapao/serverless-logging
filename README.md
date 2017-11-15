@@ -1,4 +1,4 @@
-![](logo512.png)
+![](logo256.png)
 # AWS Serverless logging
 ## Create AWS infrastructure
 The following script will ask for the required input and then proceeds to create the necessary resources.

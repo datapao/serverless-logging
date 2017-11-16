@@ -1,5 +1,6 @@
 import boto3
 import json
+import time
 
 
 def has_bucket(bucket_name):
@@ -14,7 +15,7 @@ def has_bucket(bucket_name):
 def create_bucket(bucket_name):
     client = boto3.client("s3")
     response = client.create_bucket(ACL='private', Bucket=bucket_name)
-    return response
+    return True
 
 
 def get_account_id():
@@ -135,9 +136,15 @@ def create(params):
     role_name = params["role"]
     if not has_bucket(bucket_name):
         create_bucket(bucket_name)
+        print("Created bucket: {}".format(bucket_name))
     bucket = get_bucket(bucket_name)
     if not has_role(role_name):
-        create_role(role_name, params["account_id"])
+        result = create_role(role_name, params["account_id"])
+        if result:
+            print("Created role: {}".format(role_name))
+            print("Waiting 10 seconds to role {} propagate through AWS".format(role_name))
+            time.sleep(10)
+
     bucket.wait_until_exists()
     stream_name = params["stream_name"]
     stream_arn = create_delivery_stream(
@@ -252,7 +259,7 @@ def get_user_input(param):
     if value == "":
         param["value"] = default
     else:
-        param["value"] = value
+        param["value"] = value.strip()
     return param["value"] is not None
 
 

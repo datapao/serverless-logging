@@ -1,5 +1,7 @@
 ![](logo512.png)
 # AWS Serverless logging
+Cheap serverless logging system that scales automatically.
+
 ## Create AWS infrastructure
 The following script will ask for the required input and then proceeds to create the necessary resources.
 ```

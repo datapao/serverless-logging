@@ -40,7 +40,7 @@ logger.log_batch([
 ```
 
 ## TODO
-- [ ] Add Glue to transform to parquet for easy querying
+The development tasks are tracked in [Projects](https://github.com/datapao/serverless-logging/projects/1)
 
 ## Contribution
 Feel free to send any feedback, PR or unneccesary GIFs.

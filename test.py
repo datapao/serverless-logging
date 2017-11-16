@@ -7,6 +7,7 @@ def create_message():
     message = {}
     message['Origin'] = 'test'
     message['Value'] = 12
+    message['Level'] = "INFO"
     return message
 
 

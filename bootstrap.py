@@ -3,16 +3,15 @@ import boto3
 
 def has_bucket(bucket_name):
     try:
+        client = boto3.client("s3")
         client.head_bucket(Bucket=bucket_name)
         return True
     except:
-        pass
-    return False
+        return False
 
 
 def create_bucket(bucket_name):
     client = boto3.client("s3")
-    bucket_configuration = {}
     response = client.create_bucket(ACL='private', Bucket=bucket_name)
     return response
 
@@ -121,7 +120,7 @@ def get_user_input(param):
         return False
     if value != "":
         param["value"] = value
-    return param["value"] != None
+    return param["value"] is not None
 
 
 if __name__ == "__main__":

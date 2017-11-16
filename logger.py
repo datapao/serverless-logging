@@ -1,4 +1,3 @@
-import sys
 import boto3
 import json
 
@@ -10,7 +9,7 @@ class KinesisLogger():
 
     def log(self, message):
         record = {'Data': bytes(json.dumps(message) + '\n', 'utf-8')}
-        response = self.firehose.put_record(
+        self.firehose.put_record(
             DeliveryStreamName=self.stream, Record=record)
 
     def log_batch(self, messages):

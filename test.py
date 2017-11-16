@@ -1,6 +1,5 @@
 import sys
 import boto3
-import math
 import json
 
 
@@ -20,7 +19,8 @@ while messages_num > 0:
     records = [{
         'Data': bytes(json.dumps(message) + '\n', 'utf-8')
     } for message in messages]
-    response = client.put_record_batch(DeliveryStreamName=stream, Records=records)
+    response = client.put_record_batch(
+        DeliveryStreamName=stream, Records=records)
     if int(response['FailedPutCount']) > 0:
         print("failed to put {} messages.".format(response['FailedPutCount']))
         messages_num = 0

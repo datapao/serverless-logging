@@ -1,6 +1,7 @@
 import boto3
 import json
 import logging
+import datetime
 
 
 class KinesisLogger():
@@ -8,7 +9,23 @@ class KinesisLogger():
         self.stream = stream_name
         self.firehose = boto3.client('firehose')
 
+    def error(self, message):
+        message["Level"] = "ERROR"
+        self.log(message)
+
+    def warning(self, message):
+        message["Level"] = "WARNING"
+        self.log(message)
+
+    def info(self, message):
+        message["Level"] = "INFO"
+        self.log(message)
+
+    def augment_message(self, message):
+        message["Timestamp"] = datetime.datetime.utcnow().isoformat()
+
     def log(self, message):
+        self.augment_message(message)
         try:
             record = {'Data': bytes(json.dumps(message) + '\n', 'utf-8')}
             self.firehose.put_record(
@@ -19,6 +36,9 @@ class KinesisLogger():
     def log_batch(self, messages):
         try:
             messages_num = len(messages)
+            for message in messages:
+                self.augment_message(message)
+
             while messages_num > 0:
                 current_batch_num = min(messages_num, 500)
                 records = [{

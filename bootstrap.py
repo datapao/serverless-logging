@@ -14,7 +14,7 @@ def has_bucket(bucket_name):
 
 def create_bucket(bucket_name):
     client = boto3.client("s3")
-    response = client.create_bucket(ACL='private', Bucket=bucket_name)
+    client.create_bucket(ACL='private', Bucket=bucket_name)
     return True
 
 
@@ -26,109 +26,101 @@ def get_account_id():
 
 def create_role(role_name, account_id):
     trust_policy = {
-      "Version": "2012-10-17",
-      "Statement": [
-	{
-	  "Sid": "",
-	  "Effect": "Allow",
-	  "Principal": {
-	    "Service": "firehose.amazonaws.com"
-	  },
-	  "Action": "sts:AssumeRole",
-	  "Condition": {
-	    "StringEquals": {
-	      "sts:ExternalId": account_id
-	    }
-	  }
-	}
-      ]
+        "Version":
+        "2012-10-17",
+        "Statement": [{
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "firehose.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "StringEquals": {
+                    "sts:ExternalId": account_id
+                }
+            }
+        }]
     }
     firehose_policy = {
-	"Version": "2012-10-17",
-	"Statement": [
-	    {
-		"Sid": "",
-		"Effect": "Allow",
-		"Action": [
-		    "s3:AbortMultipartUpload",
-		    "s3:GetBucketLocation",
-		    "s3:GetObject",
-		    "s3:ListBucket",
-		    "s3:ListBucketMultipartUploads",
-		    "s3:PutObject"
-		],
-		"Resource": [
-		    "arn:aws:s3:::*",
-		    "arn:aws:s3:::*/*",
-		    "arn:aws:s3:::%FIREHOSE_BUCKET_NAME%",
-		    "arn:aws:s3:::%FIREHOSE_BUCKET_NAME%/*"
-		]
-	    },
-	    {
-		"Sid": "",
-		"Effect": "Allow",
-		"Action": [
-		    "lambda:InvokeFunction",
-		    "lambda:GetFunctionConfiguration"
-		],
-		"Resource": "arn:aws:lambda:us-east-1:{}:function:*".format(account_id)
-	    },
-	    {
-		"Sid": "",
-		"Effect": "Allow",
-		"Action": [
-		    "logs:PutLogEvents"
-		],
-		"Resource": [
-		    "arn:aws:logs:us-east-1:{}:log-group:/aws/kinesisfirehose/*:log-stream:*".format(account_id)
-		]
-	    },
-	    {
-		"Sid": "",
-		"Effect": "Allow",
-		"Action": [
-		    "kinesis:DescribeStream",
-		    "kinesis:GetShardIterator",
-		    "kinesis:GetRecords"
-		],
-		"Resource": "arn:aws:kinesis:us-east-1:{}:stream/%FIREHOSE_STREAM_NAME%".format(account_id)
-	    },
-	    {
-		"Effect": "Allow",
-		"Action": [
-		    "kms:Decrypt",
-		    "kms:DescribeKey",
-		    "kms:GenerateDataKey"
-		],
-		"Resource": [
-		    "arn:aws:kms:region:accountid:key/DUMMY_KEY_ID"
-		],
-		"Condition": {
-		    "StringEquals": {
-			"kms.ViaService": "kinesis.%REGION_NAME%.amazonaws.com"
-		    },
-		    "StringLike": {
-			"kms:EncryptionContext:aws:kinesis:arn": "arn:aws:kinesis:%REGION_NAME%:{}:stream/%FIREHOSE_STREAM_NAME%".format(account_id)
-		    }
-		}
-	    }
-	]
+        "Version":
+        "2012-10-17",
+        "Statement": [{
+            "Sid":
+            "",
+            "Effect":
+            "Allow",
+            "Action": [
+                "s3:AbortMultipartUpload", "s3:GetBucketLocation",
+                "s3:GetObject", "s3:ListBucket",
+                "s3:ListBucketMultipartUploads", "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*", "arn:aws:s3:::*/*",
+                "arn:aws:s3:::%FIREHOSE_BUCKET_NAME%",
+                "arn:aws:s3:::%FIREHOSE_BUCKET_NAME%/*"
+            ]
+        }, {
+            "Sid":
+            "",
+            "Effect":
+            "Allow",
+            "Action":
+            ["lambda:InvokeFunction", "lambda:GetFunctionConfiguration"],
+            "Resource":
+            "arn:aws:lambda:us-east-1:{}:function:*".format(account_id)
+        }, {
+            "Sid":
+            "",
+            "Effect":
+            "Allow",
+            "Action": ["logs:PutLogEvents"],
+            "Resource": [
+                "arn:aws:logs:us-east-1:{}:log-group:/aws/kinesisfirehose/*:log-stream:*".
+                format(account_id)
+            ]
+        }, {
+            "Sid":
+            "",
+            "Effect":
+            "Allow",
+            "Action": [
+                "kinesis:DescribeStream", "kinesis:GetShardIterator",
+                "kinesis:GetRecords"
+            ],
+            "Resource":
+            "arn:aws:kinesis:us-east-1:{}:stream/%FIREHOSE_STREAM_NAME%".
+            format(account_id)
+        }, {
+            "Effect":
+            "Allow",
+            "Action":
+            ["kms:Decrypt", "kms:DescribeKey", "kms:GenerateDataKey"],
+            "Resource": ["arn:aws:kms:region:accountid:key/DUMMY_KEY_ID"],
+            "Condition": {
+                "StringEquals": {
+                    "kms.ViaService": "kinesis.%REGION_NAME%.amazonaws.com"
+                },
+                "StringLike": {
+                    "kms:EncryptionContext:aws:kinesis:arn":
+                    "arn:aws:kinesis:%REGION_NAME%:{}:stream/%FIREHOSE_STREAM_NAME%".
+                    format(account_id)
+                }
+            }
+        }]
     }
 
     client = boto3.client("iam")
-    _ = client.create_role(
+    client.create_role(
         Path='/',
         RoleName=role_name,
         AssumeRolePolicyDocument=json.dumps(trust_policy),
-        Description='Firehose delivery role'
-    )
-    _ = client.put_role_policy(
+        Description='Firehose delivery role')
+    client.put_role_policy(
         RoleName=role_name,
         PolicyName='firehose_delivery_policy',
-        PolicyDocument=json.dumps(firehose_policy)
-    )
+        PolicyDocument=json.dumps(firehose_policy))
     return True
-
 
 
 def create(params):
@@ -142,7 +134,8 @@ def create(params):
         result = create_role(role_name, params["account_id"])
         if result:
             print("Created role: {}".format(role_name))
-            print("Waiting 10 seconds to role {} propagate through AWS".format(role_name))
+            print("Waiting 10 seconds to role {} propagate through AWS".format(
+                role_name))
             time.sleep(10)
 
     bucket.wait_until_exists()
@@ -232,7 +225,8 @@ parameters = [{
     "verify": lambda x: isInt(x) and int(x) >= 5 and int(x) <= 128,
     "default": 128
 }, {
-    "name": "compression",
+    "name":
+    "compression",
     "prompt_name":
     "compression, one of 'UNCOMPRESSED'|'GZIP'|'ZIP'|'Snappy'",
     "verify":
@@ -251,9 +245,9 @@ def transform_user_input(parameters):
 
 
 def get_user_input(param):
-    default = param["default"]() if callable(param["default"]) else param["default"]
-    value = input(
-        "Enter the {} [{}]: ".format(param["prompt_name"], default))
+    default = param["default"]() if callable(
+        param["default"]) else param["default"]
+    value = input("Enter the {} [{}]: ".format(param["prompt_name"], default))
     if value != "" and "verify" in param and not param["verify"](value):
         return False
     if value == "":

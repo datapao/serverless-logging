@@ -35,14 +35,15 @@ Import the Logger class and use it to log structured messages.
 logger = KinesisLogger("datapao-logging-3")
 
 # Simple message log
-logger.log({ "level": "INFO", "message": "Failed to run batch job" })
+logger.info({ "message": "Failed to run batch job" })
 
 # Batch log messages
 logger.log_batch([
     { "level": "INFO", "message": "Failed to run batch job" },
-    { "level": "DEBUG", "origin": "testing", "timestamp": 1391203123, "sensor": "temp-0002xb" }
+    { "level": "DEBUG", "origin": "testing", "sensor": "temp-0002xb" }
 ])
 ```
+The logger automatically adds an ISO8601 UTC timestamp to every message. It also offers convenient logging functions that adds a `Level` attribute.
 
 ## TODO
 The development tasks are tracked in [Projects](https://github.com/datapao/serverless-logging/projects/1)

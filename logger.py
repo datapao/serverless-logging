@@ -1,7 +1,7 @@
-import boto3
 import json
 import logging
 import datetime
+import boto3
 
 
 class KinesisLogger():
@@ -56,9 +56,7 @@ class KinesisLogger():
 
 if __name__ == "__main__":
     logger = KinesisLogger("datapao-logging-6")
-    logger.log({
-        "name": "mate"
-    })
+    logger.log({"name": "mate"})
     logger.log_batch([{
         "name": "mate"
     }, {

@@ -12,9 +12,12 @@ python3 bootstrap.py
 ## Send test log messages
 To send 3000 log message to the log sytem use the `test.py`.
 ```
-python3 1est.py <stream-name> 3000
+python3 test.py <stream-name> 3000
 ```
 ![](img/2.gif)
+
+The test messages  will be delivered to S3, buffered and compressed.
+![](img/s3-log-present.png)
 
 ## Architecture
 The architecture is quite simple.

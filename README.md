@@ -1,4 +1,4 @@
-![](logo512.png)
+![](img/logo512.png)
 # AWS Structured Serverless logging
 Cheap structured serverless logging system that scales automatically.
 
@@ -7,18 +7,18 @@ The following script will ask for the required input and then proceeds to create
 ```
 python3 bootstrap.py
 ```
-[![asciicast](https://asciinema.org/a/PboyxjguezLm6BUDeICkpe48h.png)](https://asciinema.org/a/PboyxjguezLm6BUDeICkpe48h)
+![](img/1.gif)
 
 ## Send test log messages
-To send 1000 log message to the log sytem use the `test.py`.
+To send 3000 log message to the log sytem use the `test.py`.
 ```
-python3 test.py <stream-name> 1000
+python3 1est.py <stream-name> 3000
 ```
-[![asciicast](https://asciinema.org/a/ns3GLeAaMdMnRn88YBwTMRQUP.png)](https://asciinema.org/a/ns3GLeAaMdMnRn88YBwTMRQUP)
+![](img/2.gif)
 
 ## Architecture
 The architecture is quite simple.
-![](architecture.png)
+![](img/architecture.png)
 
 1. The provided logger logs messages into the Kinesis Firehose delivery stream
 2. The stream buffers and compresses the log messages and delivers it to S3

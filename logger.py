@@ -36,20 +36,25 @@ class KinesisLogger():
     def log_batch(self, messages):
         try:
             messages_num = len(messages)
+            batch = 500
+            iteration_start = 0
             for message in messages:
                 self.augment_message(message)
 
             while messages_num > 0:
-                current_batch_num = min(messages_num, 500)
+                current_batch_num = min(messages_num, batch)
+                current_batch = messages[iteration_start:
+                                         iteration_start + batch]
                 records = [{
                     'Data': bytes(json.dumps(message) + '\n', 'utf-8')
-                } for message in messages]
+                } for message in current_batch]
                 response = self.firehose.put_record_batch(
                     DeliveryStreamName=self.stream, Records=records)
                 if int(response['FailedPutCount']) > 0:
                     logging.error("failed to put {} messages.".format(
                         response['FailedPutCount']))
                 messages_num -= current_batch_num
+                iteration_start += batch
         except Exception as e:
             logging.error(e)
 
